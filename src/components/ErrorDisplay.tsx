@@ -1,5 +1,5 @@
 import React from 'react';
-import { GlassCard } from './GlassContainer';
+import { GlassCard } from './Common/GlassContainer';
 
 interface ErrorDisplayProps {
   error: string;

@@ -1,6 +1,6 @@
 import React from 'react';
-import { GlassPanel } from './GlassContainer';
-import WindowHeader from './WindowHeader';
+import { GlassPanel } from '../Common/GlassContainer';
+import WindowHeader from '../Common/WindowHeader';
 import CodePreview from './CodePreview';
 
 interface CodePreviewPanelProps {

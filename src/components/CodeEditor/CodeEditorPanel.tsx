@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { GlassPanel } from './GlassContainer';
-import WindowHeader from './WindowHeader';
+import { GlassPanel } from '../Common/GlassContainer';
+import WindowHeader from '../Common/WindowHeader';
 import CodeEditor from './CodeEditor';
-import ErrorDisplay from './ErrorDisplay';
+import ErrorDisplay from '../ErrorDisplay';
 
 interface CodeEditorPanelProps {
   value: string;

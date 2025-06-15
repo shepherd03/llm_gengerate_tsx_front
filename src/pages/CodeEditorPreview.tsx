@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import CodeEditorPanel from '../components/CodeEditorPanel';
-import CodePreviewPanel from '../components/CodePreviewPanel';
+import CodeEditorPanel from '../components/CodeEditor/CodeEditorPanel';
+import CodePreviewPanel from '../components/CodePreview/CodePreviewPanel';
 import { useCodeCompiler } from '../utils/useCodeCompiler';
 import { DEFAULT_TSX_CODE } from '../utils/defaultCode';
 
@@ -12,7 +12,7 @@ import { DEFAULT_TSX_CODE } from '../utils/defaultCode';
  * - 使用自定义Hook管理编译状态
  * - 组件化的错误处理和状态显示
  */
-const CodeEditorDemo: React.FC = () => {
+const CodeEditorPreview: React.FC = () => {
   const [code, setCode] = useState('');
 
   // 使用编译器Hook管理编译状态
@@ -75,4 +75,4 @@ const CodeEditorDemo: React.FC = () => {
   );
 };
 
-export default CodeEditorDemo;
+export default CodeEditorPreview;

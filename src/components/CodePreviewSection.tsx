@@ -1,5 +1,5 @@
 import React from 'react';
-import WindowHeader from './WindowHeader';
+import WindowHeader from './Common/WindowHeader';
 
 interface CodePreviewSectionProps {
   tsxCode: string;

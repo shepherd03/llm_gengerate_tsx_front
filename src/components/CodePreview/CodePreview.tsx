@@ -1,5 +1,5 @@
 import React, { useRef, useMemo, useEffect } from 'react';
-import { GlassCard } from './GlassContainer';
+import { GlassCard } from '../Common/GlassContainer';
 
 interface CodePreviewProps {
   compiledCode: string;

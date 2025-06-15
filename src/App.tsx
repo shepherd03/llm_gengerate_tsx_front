@@ -3,7 +3,7 @@ import AppLayout from './components/AppLayout';
 import AppHeader from './components/AppHeader';
 import ChatSection from './components/ChatSection';
 import CodePreviewSection from './components/CodePreviewSection';
-import CodeEditorDemo from './pages/CodeEditorDemo';
+import CodeEditorPreview from './pages/CodeEditorPreview';
 import { useAppState } from './utils/useAppState';
 import { useApiService } from './utils/useApiService';
 
@@ -44,7 +44,7 @@ function App() {
 
       {/* 主要内容区域 */}
       {currentPage === 'editor' ? (
-        <CodeEditorDemo />
+        <CodeEditorPreview />
       ) : (
         <div className="h-full flex p-6 ">
           <ChatSection
