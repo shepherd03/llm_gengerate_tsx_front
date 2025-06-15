@@ -1,0 +1,72 @@
+/* Monaco Editor 自定义滚动条样式 */
+.monaco-editor .scrollbar {
+  background: transparent;
+}
+
+.monaco-editor .slider {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.monaco-editor .slider:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.monaco-editor .slider.active {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* 垂直滚动条 */
+.monaco-editor .decorationsOverviewRuler {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* 水平滚动条 */
+.monaco-editor .horizontal-scrollbar {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+/* 滚动条交叉点 */
+.monaco-editor .scrollbar-intersection {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* 编辑器容器样式优化 */
+.monaco-editor {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.monaco-editor .margin {
+  background: rgba(248, 250, 252, 0.8);
+}
+
+.monaco-editor .monaco-editor-background {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* 行号样式 */
+.monaco-editor .line-numbers {
+  color: rgba(107, 114, 128, 0.8);
+  font-weight: 400;
+}
+
+/* 当前行高亮 */
+.monaco-editor .current-line {
+  background: rgba(59, 130, 246, 0.05);
+  border: none;
+}
+
+/* 选中文本样式 */
+.monaco-editor .selected-text {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+/* 光标样式 */
+.monaco-editor .cursor {
+  background: #3b82f6;
+  width: 2px;
+}
