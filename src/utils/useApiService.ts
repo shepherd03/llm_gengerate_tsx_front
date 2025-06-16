@@ -24,16 +24,16 @@ export const useApiService = (): UseApiServiceReturn => {
     };
 
     checkApiHealth();
-    // 每10秒检查一次服务状态
-    const interval = setInterval(checkApiHealth, 10000);
+    // 每20秒检查一次服务状态
+    const interval = setInterval(checkApiHealth, 20000);
 
     return () => clearInterval(interval);
   }, []);
 
   // 发送消息处理函数
   const sendMessage = useCallback(async (
-    content: string, 
-    messages: Message[], 
+    content: string,
+    messages: Message[],
     setMessages: React.Dispatch<React.SetStateAction<Message[]>>
   ) => {
     // 添加用户消息

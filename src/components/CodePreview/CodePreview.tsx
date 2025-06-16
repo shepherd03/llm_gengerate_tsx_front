@@ -1,5 +1,8 @@
-import React, { useRef, useMemo, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { LiveProvider, LivePreview, LiveError } from 'react-live';
 import { GlassCard } from '../Common/GlassContainer';
+import * as echarts from 'echarts';
+import ReactECharts from 'echarts-for-react';
 
 interface CodePreviewProps {
   compiledCode: string;
@@ -9,166 +12,118 @@ interface CodePreviewProps {
 
 /**
  * 代码预览组件
- * 负责在iframe中渲染编译后的TSX代码
+ * 动态执行编译后的TSX代码并渲染React组件
  */
 export const CodePreview: React.FC<CodePreviewProps> = ({
   compiledCode,
   error,
   className = ''
 }) => {
-  const previewRef = useRef<HTMLIFrameElement>(null);
+  const [processedCode, setProcessedCode] = useState<string>('');
+  const [renderError, setRenderError] = useState<string | null>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 生成iframe的HTML内容
-  const generateIframeContent = useMemo(() => {
-    if (!compiledCode) return '';
+  // 处理编译后的代码，移除import和export语句
+  const processCode = useCallback((code: string): string => {
+    if (!code) return '';
 
-    return `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>TSX + Tailwind Preview</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
-        <!-- React -->
-        <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-        
-        <!-- ECharts 和相关库 -->
-        <script src="https://unpkg.com/echarts@5.4.3/dist/echarts.min.js"></script>
-        <script src="https://unpkg.com/echarts-for-react@3.0.2/lib/index.js"></script>
-        
-        <!-- Tailwind CSS -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-          tailwind.config = {
-            darkMode: 'class',
-            theme: {
-              extend: {
-                animation: {
-                  'bounce-slow': 'bounce 2s infinite',
-                  'pulse-slow': 'pulse 3s infinite'
-                }
-              }
-            }
-          }
-        </script>
-        
-        <style>
-          body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-          }
-          #root {
-            min-height: 100vh;
-            width: 100%;
-          }
-          .error-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-            padding: 2rem;
-          }
-          .error-card {
-            max-width: 32rem;
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            border: 1px solid #fecaca;
-            padding: 1.5rem;
-          }
-          .error-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-          }
-          .error-icon {
-            width: 2rem;
-            height: 2rem;
-            background: #ef4444;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-          }
-          .error-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #991b1b;
-            margin: 0;
-          }
-          .error-message {
-            font-size: 0.875rem;
-            color: #dc2626;
-            background: #fef2f2;
-            padding: 0.75rem;
-            border-radius: 0.375rem;
-            border: 1px solid #fecaca;
-            overflow: auto;
-            white-space: pre-wrap;
-            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-            line-height: 1.5;
-            margin: 0;
-          }
-          .error-footer {
-            margin-top: 1rem;
-            font-size: 0.75rem;
-            color: #6b7280;
-            text-align: center;
-          }
-        </style>
-      </head>
-      <body>
-        <div id="root"></div>
-        <script>
-          // 将 echarts-for-react 暴露为全局变量
-          if (typeof window.EchartsForReact !== 'undefined') {
-            window.ReactECharts = window.EchartsForReact.default || window.EchartsForReact;
-          }
-          
-          try {
-            ${compiledCode}
-            
-            const root = ReactDOM.createRoot(document.getElementById('root'));
-            root.render(React.createElement(MyComponent));
-          } catch (error) {
-            console.error('渲染错误:', error);
-            document.getElementById('root').innerHTML = 
-              '<div class="error-container">' +
-              '<div class="error-card">' +
-              '<div class="error-header">' +
-              '<div class="error-icon">' +
-              '<span style="color: white; font-weight: bold; font-size: 0.875rem;">!</span>' +
-              '</div>' +
-              '<h3 class="error-title">渲染错误</h3>' +
-              '</div>' +
-              '<pre class="error-message">' + error.message + '</pre>' +
-              '<div class="error-footer">' +
-              '请检查TSX语法和TypeScript类型定义' +
-              '</div>' +
-              '</div>' +
-              '</div>';
-          }
-        </script>
-      </body>
-      </html>
-    `;
-  }, [compiledCode]);
+    try {
+      let processedCode = code;
 
-  // 当编译代码变化时，更新iframe内容
-  useEffect(() => {
-    if (previewRef.current && generateIframeContent) {
-      previewRef.current.srcdoc = generateIframeContent;
+      // 移除所有import语句（因为我们会通过scope提供依赖）
+      processedCode = processedCode.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
+
+      // 处理export default语句，转换为render调用
+      const exportDefaultMatch = processedCode.match(/export\s+default\s+(\w+);?/);
+      if (exportDefaultMatch) {
+        const componentName = exportDefaultMatch[1];
+        processedCode = processedCode.replace(/export\s+default\s+\w+;?/, '');
+        processedCode += `\nrender(<${componentName} />);`;
+      } else {
+        // 如果没有export default，尝试查找最后定义的组件
+        const patterns = [
+          /function\s+(\w+)\s*\(/,  // function MyComponent()
+          /const\s+(\w+)\s*=\s*\(/,  // const MyComponent = ()
+          /const\s+(\w+)\s*:\s*React\.FC/,  // const MyComponent: React.FC
+          /const\s+(\w+)\s*=\s*React\.memo/  // const MyComponent = React.memo
+        ];
+
+        let componentName = null;
+        for (const pattern of patterns) {
+          const match = processedCode.match(pattern);
+          if (match) {
+            componentName = match[1];
+            break;
+          }
+        }
+
+        if (componentName) {
+          processedCode += `\nrender(<${componentName} />);`;
+        }
+      }
+
+      return processedCode;
+    } catch (err) {
+      console.error('处理代码时出错:', err);
+      throw err;
     }
-  }, [generateIframeContent]);
+  }, []);
+
+  // 创建react-live的scope，包含所有必要的依赖
+  const scope = useMemo(() => ({
+    React: {
+      ...React,
+      useState: React.useState,
+      useEffect: React.useEffect,
+      useCallback: React.useCallback,
+      useRef: React.useRef,
+      useMemo: React.useMemo,
+    },
+    useState: React.useState,
+    useEffect: React.useEffect,
+    useCallback: React.useCallback,
+    useRef: React.useRef,
+    useMemo: React.useMemo,
+    echarts,
+    ReactECharts,
+  }), []);
+
+  // 当编译代码变化时，使用防抖延迟处理代码
+  useEffect(() => {
+    // 清除之前的定时器
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    if (!compiledCode) {
+      setProcessedCode('');
+      setRenderError(null);
+      return;
+    }
+
+    // 设置防抖定时器，0.5秒后执行
+    debounceTimerRef.current = setTimeout(() => {
+      try {
+        const processed = processCode(compiledCode);
+        setProcessedCode(processed);
+        setRenderError(null);
+      } catch (err) {
+        console.error('处理代码时出错:', err);
+        setRenderError(err instanceof Error ? err.message : '代码处理失败');
+        setProcessedCode('');
+      }
+    }, 500);
+
+    // 清理函数
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [compiledCode, processCode]);
 
   // 如果有错误或没有编译代码，显示占位符
-  if (error || !compiledCode) {
+  if (error || renderError || !compiledCode || !processedCode) {
     return (
       <div className={`flex items-center justify-center h-full ${className}`}>
         <div className="text-center">
@@ -177,26 +132,31 @@ export const CodePreview: React.FC<CodePreviewProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
             </svg>
           </GlassCard>
-          <p className="text-lg font-semibold mb-2 bg-gradient-to-r from-gray-700 to-gray-600 bg-clip-text text-transparent">
-            {error ? '编译失败' : '开始编码'}
+          <p className="text-gray-500 text-lg font-medium mb-2">
+            {error || renderError || '等待代码编译...'}
           </p>
-          <p className="text-sm text-gray-600 max-w-md leading-relaxed">
-            {error ? '请修复代码中的错误' : '在左侧编辑器中输入 TSX 代码，实时预览将在此处显示'}
+          <p className="text-gray-400 text-sm">
+            {error || renderError ? '请检查代码是否正确' : '编译完成后将显示预览'}
           </p>
         </div>
       </div>
     );
   }
 
+  // 使用react-live渲染动态组件
   return (
-    <iframe
-      ref={previewRef}
-      srcDoc={generateIframeContent}
-      className={`w-full h-full border-none rounded-lg ${className}`}
-      title="TSX Preview"
-      sandbox="allow-scripts"
-    />
+    <div className={`h-full overflow-auto ${className}`}>
+      <div className="min-h-full p-4">
+        <LiveProvider
+          code={processedCode}
+          scope={scope}
+          noInline={true}
+        >
+          <LivePreview className="min-h-full" />
+          <LiveError className="text-red-500 p-4 bg-red-50 rounded-md mt-4" />
+        </LiveProvider>
+      </div>
+    </div>
   );
 };
-
 export default CodePreview;

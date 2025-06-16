@@ -2,79 +2,111 @@
  * 默认的TSX示例代码
  * 展示TypeScript接口、React组件、状态管理和Tailwind CSS样式
  */
-export const DEFAULT_TSX_CODE = `interface ButtonProps {
-  children: React.ReactNode;
-  variant?: 'primary' | 'secondary';
-  onClick?: () => void;
-}
+export const DEFAULT_TSX_CODE = `function MyComponent() {
+  const chartRef = React.useRef<HTMLDivElement>(null);
+  const [chartInstance, setChartInstance] = React.useState<any>();
 
-const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', onClick }) => {
-  const baseClasses = 'px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105';
-  const variantClasses = variant === 'primary' 
-    ? 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg'
-    : 'bg-gray-200 hover:bg-gray-300 text-gray-800';
-  
-  return (
-    <button 
-      className={\`\${baseClasses} \${variantClasses}\`}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
-};
+  React.useEffect(() => {
+    if (chartRef.current) {
+      const chart = echarts.init(chartRef.current);
+      setChartInstance(chart);
 
-function MyComponent() {
-  const [count, setCount] = React.useState<number>(0);
-  const [theme, setTheme] = React.useState<'light' | 'dark'>('light');
-  
+      const option = {
+        title: {
+          text: 'Sample Chart',
+          left: 'center',
+          textStyle: {
+            color: '#333',
+            fontSize: 18,
+            fontWeight: 'bold'
+          }
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          axisLine: {
+            lineStyle: {
+              color: '#999'
+            }
+          },
+          axisLabel: {
+            color: '#666'
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: {
+            show: true,
+            lineStyle: {
+              color: '#999'
+            }
+          },
+          splitLine: {
+            lineStyle: {
+              color: '#eee'
+            }
+          },
+          axisLabel: {
+            color: '#666'
+          }
+        },
+        series: [
+          {
+            name: 'Sales',
+            type: 'bar',
+            data: [120, 200, 150, 80, 70, 110, 130],
+            itemStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: '#83bff6' },
+                { offset: 0.5, color: '#188df0' },
+                { offset: 1, color: '#0077e6' }
+              ])
+            },
+            emphasis: {
+              itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: '#2378f7' },
+                  { offset: 0.7, color: '#2378f7' },
+                  { offset: 1, color: '#83bff6' }
+                ])
+              }
+            }
+          }
+        ]
+      };
+
+      chart.setOption(option);
+
+      const handleResize = () => chart.resize();
+      window.addEventListener('resize', handleResize);
+
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        chart.dispose();
+      };
+    }
+  }, []);
+
   return (
-    <div className={\`min-h-screen p-8 transition-colors duration-300 \${
-      theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900'
-    }\`}>
-      <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 space-y-6">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-            TSX + Tailwind 示例
-          </h2>
-          <p className="text-gray-600 dark:text-gray-300">
-            支持TypeScript类型和Tailwind CSS样式
-          </p>
-        </div>
-        
-        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 text-center">
-          <p className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">
-            点击次数: <span className="text-blue-500">{count}</span>
-          </p>
-          
-          <div className="space-y-3">
-            <Button onClick={() => setCount(count + 1)}>
-              增加计数 (+1)
-            </Button>
-            
-            <Button 
-              variant="secondary" 
-              onClick={() => setCount(Math.max(0, count - 1))}
-            >
-              减少计数 (-1)
-            </Button>
-            
-            <Button 
-              variant={theme === 'light' ? 'primary' : 'secondary'}
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            >
-              切换主题 ({theme === 'light' ? '🌙' : '☀️'})
-            </Button>
-          </div>
-        </div>
-        
-        <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-          这是一个使用TSX语法和Tailwind CSS的动态组件
-        </div>
-      </div>
+    <div className="w-full h-full p-4 bg-white rounded-lg shadow-md">
+      <div ref={chartRef} className="w-full h-80"></div>
     </div>
   );
-}`;
+}
+
+export default MyComponent;`;
 
 /**
  * 其他示例代码模板
@@ -94,7 +126,9 @@ export const CODE_TEMPLATES = {
       </p>
     </div>
   );
-}`
+}
+
+export default MyComponent;`
   },
 
   interactive: {
@@ -123,7 +157,9 @@ export const CODE_TEMPLATES = {
       </button>
     </div>
   );
-}`
+}
+
+export default MyComponent;`
   },
 
   form: {
@@ -190,7 +226,153 @@ export const CODE_TEMPLATES = {
       </form>
     </div>
   );
-}`
+}
+
+export default MyComponent;`
+  },
+
+  echarts: {
+    name: 'ECharts图表',
+    description: '使用ECharts创建交互式图表',
+    code: `function MyComponent() {
+  const [chartType, setChartType] = React.useState('bar');
+  
+  // 柱状图配置
+  const barOption = {
+    title: {
+      text: '销售数据统计',
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    xAxis: {
+      type: 'category',
+      data: ['一月', '二月', '三月', '四月', '五月', '六月']
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [{
+      name: '销售额',
+      data: [120, 200, 150, 80, 70, 110],
+      type: 'bar',
+      itemStyle: {
+        color: '#3b82f6'
+      }
+    }]
+  };
+  
+  // 饼图配置
+  const pieOption = {
+    title: {
+      text: '产品占比',
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'item'
+    },
+    series: [{
+      name: '产品',
+      type: 'pie',
+      radius: '50%',
+      data: [
+        { value: 1048, name: '产品A' },
+        { value: 735, name: '产品B' },
+        { value: 580, name: '产品C' },
+        { value: 484, name: '产品D' },
+        { value: 300, name: '产品E' }
+      ],
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }]
+  };
+  
+  // 折线图配置
+  const lineOption = {
+    title: {
+      text: '趋势分析',
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    xAxis: {
+      type: 'category',
+      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [{
+      name: '访问量',
+      data: [820, 932, 901, 934, 1290, 1330, 1320],
+      type: 'line',
+      smooth: true,
+      itemStyle: {
+        color: '#10b981'
+      }
+    }]
+  };
+  
+  const getOption = () => {
+    switch(chartType) {
+      case 'pie': return pieOption;
+      case 'line': return lineOption;
+      default: return barOption;
+    }
+  };
+  
+  return (
+    <div className="p-8">
+      <div className="mb-6 text-center">
+        <h1 className="text-2xl font-bold text-gray-800 mb-4">
+          ECharts 图表示例
+        </h1>
+        <div className="space-x-2">
+          <button
+            onClick={() => setChartType('bar')}
+            className={\`px-4 py-2 rounded-lg transition-colors \${chartType === 'bar' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}\`}
+          >
+            柱状图
+          </button>
+          <button
+            onClick={() => setChartType('pie')}
+            className={\`px-4 py-2 rounded-lg transition-colors \${chartType === 'pie' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}\`}
+          >
+            饼图
+          </button>
+          <button
+            onClick={() => setChartType('line')}
+            className={\`px-4 py-2 rounded-lg transition-colors \${chartType === 'line' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}\`}
+          >
+            折线图
+          </button>
+        </div>
+      </div>
+      
+      <div className="bg-white rounded-lg shadow-lg p-4">
+        <ReactECharts
+          option={getOption()}
+          style={{ height: '400px', width: '100%' }}
+          notMerge={true}
+          lazyUpdate={true}
+        />
+      </div>
+      
+      <div className="mt-4 text-center text-sm text-gray-600">
+        点击上方按钮切换不同类型的图表
+      </div>
+    </div>
+  );
+}
+
+export default MyComponent;`
   }
 };
 
