@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import AppLayout from './components/AppLayout';
 import AppHeader from './components/AppHeader';
 import ChatSection from './components/ChatSection';
-import CodePreviewSection from './components/CodePreviewSection';
+import { CodePreviewPanel } from './components/CodePreview/CodePreviewPanel';
 import CodeEditorPreview from './pages/CodeEditorPreview';
 import { useAppState } from './utils/useAppState';
 import { useApiService } from './utils/useApiService';
+import { useCodeCompiler } from './utils/useCodeCompiler';
 
 function App() {
   const {
@@ -18,6 +19,7 @@ function App() {
   } = useAppState();
 
   const { isOnline, isLoading, sendMessage } = useApiService();
+  const { compiledCode, error: compileError, isCompiling, compile } = useCodeCompiler();
 
   // 处理发送消息
   const handleSendMessage = async (content: string) => {
@@ -31,6 +33,13 @@ function App() {
       updateTsxCode(latestMessage.tsxCode);
     }
   }, [messages, updateTsxCode]);
+
+  // 监听TSX代码变化，自动编译
+  useEffect(() => {
+    if (currentTsxCode) {
+      compile(currentTsxCode);
+    }
+  }, [currentTsxCode, compile]);
 
 
 
@@ -46,13 +55,19 @@ function App() {
       {currentPage === 'editor' ? (
         <CodeEditorPreview />
       ) : (
-        <div className="h-full flex p-6 ">
+        <div className="flex-1 flex p-6 overflow-hidden">
           <ChatSection
             messages={messages}
             isLoading={isLoading}
             onSendMessage={handleSendMessage}
           />
-          <CodePreviewSection tsxCode={currentTsxCode} />
+          <CodePreviewPanel
+            compiledCode={compiledCode}
+            error={compileError}
+            isCompiling={isCompiling}
+            className="w-1/2 h-full ml-3"
+            title="TSX 代码预览"
+          />
         </div>
       )}
     </AppLayout>

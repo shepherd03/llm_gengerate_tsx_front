@@ -49,14 +49,14 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           formatOnType: true,
           bracketPairColorization: { enabled: true },
           padding: { top: 8, bottom: 8 },
-          // 自定义滚动条样式
+          // 隐藏滚动条但保持滚动功能
           scrollbar: {
-            vertical: 'auto',
-            horizontal: 'auto',
-            verticalScrollbarSize: 8,
-            horizontalScrollbarSize: 8,
-            verticalSliderSize: 8,
-            horizontalSliderSize: 8
+            vertical: 'hidden',
+            horizontal: 'hidden',
+            verticalScrollbarSize: 0,
+            horizontalScrollbarSize: 0,
+            verticalSliderSize: 0,
+            horizontalSliderSize: 0
           }
         }}
         onMount={(editor: any, monaco: any) => {

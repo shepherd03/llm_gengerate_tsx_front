@@ -31,7 +31,7 @@ class HttpClient {
     // 创建axios实例
     this.instance = axios.create({
       baseURL: API_BASE_URL,
-      timeout: 40000, // 默认40秒超时
+      timeout: 60000, // 默认60秒超时
       headers: {
         'Content-Type': 'application/json',
       },

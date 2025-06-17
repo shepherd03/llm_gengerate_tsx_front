@@ -50,22 +50,22 @@ export const CodePreviewPanel: React.FC<CodePreviewPanelProps> = ({
       />
 
       {/* 预览容器 */}
-      <div className="flex-1 p-6 overflow-hidden">
-        {isCompiling ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-auto scrollbar-hide">
+          {isCompiling ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="w-12 h-12 mx-auto mb-4 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
               <p className="text-lg font-semibold mb-2 text-gray-700">编译中</p>
               <p className="text-sm text-gray-600">正在处理您的代码...</p>
             </div>
-          </div>
-        ) : (
-          <CodePreview
-            compiledCode={compiledCode}
-            error={error}
-            className="h-full"
-          />
-        )}
+          ) : (
+            <CodePreview
+              compiledCode={compiledCode}
+              error={error}
+              className="h-full"
+            />
+          )}
+        </div>
       </div>
     </GlassPanel>
   );

@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import type { MessageListProps } from '../types';
-import CodeDisplay from './CodeDisplay';
+import { GlassCard } from './Common/GlassContainer';
 
 /**
  * 消息列表组件
@@ -67,13 +68,15 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                   </div>
-                  <div className="glass-strong border border-white/40 rounded-2xl px-5 py-4 max-w-lg shadow-glass transform hover:scale-[1.02] transition-all duration-300">
-                    <p className="text-sm leading-relaxed text-gray-800 whitespace-pre-wrap">{message.content}</p>
+                  <GlassCard className="flex-1 bg-white/80 p-4">
+                    <div className="prose prose-sm max-w-none">
+                      <ReactMarkdown>{message.content}</ReactMarkdown>
+                    </div>
 
                     {/* 如果有TSX代码，显示提示 */}
                     {message.tsxCode && (
-                      <div className="mt-4 p-3 glass-effect border border-green-300/40 rounded-xl shadow-glass">
-                        <div className="flex items-center text-green-700 text-xs font-medium">
+                      <GlassCard className="mt-4 p-3 border border-green-300/40">
+                        <div className="flex items-center text-green-700 text-xs font-medium ">
                           <div className="w-4 h-4 mr-2 rounded-full bg-green-500 flex items-center justify-center shadow-sm">
                             <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -81,11 +84,11 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
                           </div>
                           TSX代码已生成，请在右侧预览
                         </div>
-                      </div>
+                      </GlassCard>
                     )}
 
                     <p className="text-xs text-gray-500 mt-3 opacity-70">{formatTime(message.timestamp)}</p>
-                  </div>
+                  </GlassCard>
                 </div>
               </div>
             )}

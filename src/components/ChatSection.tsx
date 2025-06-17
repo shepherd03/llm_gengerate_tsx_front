@@ -1,6 +1,7 @@
 import React from 'react';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
+import { GlassPanel } from './Common/GlassContainer';
 import type { Message } from '../types';
 
 interface ChatSectionProps {
@@ -15,10 +16,10 @@ interface ChatSectionProps {
  */
 const ChatSection: React.FC<ChatSectionProps> = ({ messages, isLoading, onSendMessage }) => {
   return (
-    <div className="w-1/2 flex flex-col glass-strong rounded-2xl shadow-glass-strong mr-3">
+    <GlassPanel className="w-1/2 h-full flex flex-col mr-3">
       <MessageList messages={messages} />
       <ChatInput onSendMessage={onSendMessage} isLoading={isLoading} />
-    </div>
+    </GlassPanel>
   );
 };
 

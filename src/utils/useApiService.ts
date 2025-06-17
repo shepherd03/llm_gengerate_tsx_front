@@ -50,7 +50,7 @@ export const useApiService = (): UseApiServiceReturn => {
     try {
       // 调用API获取TSX代码
       const response = await apiService.generateTsxCode(content);
-
+      console.log(response.tsxCode)
       // 添加AI回复消息
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
