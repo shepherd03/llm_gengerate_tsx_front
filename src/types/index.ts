@@ -40,6 +40,38 @@ export interface HealthCheckData {
   timestamp: string;
 }
 
+// 数据获取接口的响应数据结构
+export interface FetchDataResponse {
+  operation_type: 'data_display' | 'statistical_analysis' | 'visualization';
+  title: string;
+  result: any; // 根据operation_type不同，数据格式不同
+  type?: string; // 仅在visualization时存在
+  source?: string; // 仅在statistical_analysis时存在
+}
+
+// 数据展示类型
+export interface DataDisplayResponse {
+  operation_type: 'data_display';
+  title: string;
+  result: Array<Record<string, any>>;
+}
+
+// 统计分析类型
+export interface StatisticalAnalysisResponse {
+  operation_type: 'statistical_analysis';
+  title: string;
+  result: Record<string, any>;
+  source: string;
+}
+
+// 可视化类型
+export interface VisualizationResponse {
+  operation_type: 'visualization';
+  title: string;
+  result: Array<Record<string, any>>;
+  type: string;
+}
+
 // 组件Props类型定义
 export interface MessageListProps {
   messages: Message[];

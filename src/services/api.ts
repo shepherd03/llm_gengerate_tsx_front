@@ -1,4 +1,10 @@
-import type { ApiResponse, BackendResponse, TsxGenerationData, HealthCheckData } from '../types';
+import type { 
+  ApiResponse, 
+  BackendResponse, 
+  TsxGenerationData, 
+  HealthCheckData, 
+  FetchDataResponse 
+} from '../types';
 import { httpClient } from '../utils/http';
 
 /**
@@ -28,7 +34,7 @@ class ApiService {
       }
 
       const backendData = response.data as BackendResponse<TsxGenerationData>;
-      
+
       // 检查后端响应状态码
       if (backendData.code !== 200) {
         return {
@@ -72,7 +78,7 @@ class ApiService {
   async checkHealth(): Promise<boolean> {
     try {
       const response = await httpClient.get<BackendResponse<HealthCheckData>>('/health_check');
-      
+
       if (!response.success) {
         return false;
       }
@@ -108,7 +114,7 @@ class ApiService {
       }
 
       const backendData = response.data as BackendResponse<TsxGenerationData>;
-      
+
       if (backendData.code !== 200) {
         return {
           success: false,
@@ -140,6 +146,46 @@ class ApiService {
         message: '网络请求失败',
         error: error instanceof Error ? error.message : '未知错误'
       };
+    }
+  }
+
+  /**
+   * 获取数据接口
+   * @param userInput 用户输入
+   * @returns Promise<BackendResponse<FetchDataResponse> | null>
+   */
+  async fetchData(userInput: string): Promise<BackendResponse<FetchDataResponse> | null> {
+    try {
+      // 直接发送POST请求，后端返回的就是标准格式
+      const response = await httpClient.post<BackendResponse<FetchDataResponse>>('/fetch_data', {
+        user_input: userInput
+      });
+
+      // 检查HTTP请求是否成功
+      if (!response.success) {
+        console.error('数据获取失败:', response.error);
+        return null;
+      }
+
+      // response.data 就是 BackendResponse<FetchDataResponse> 格式
+      const backendData = response.data as BackendResponse<FetchDataResponse>;
+
+      // 检查业务状态码
+      if (backendData.code !== 200) {
+        console.error('数据获取失败:', backendData.message);
+        return null;
+      }
+
+      // 验证响应数据格式
+      if (!backendData.data || !backendData.data.operation_type) {
+        console.error('响应数据格式错误: 缺少operation_type字段');
+        return null;
+      }
+      
+      return backendData;
+    } catch (error) {
+      console.error('数据获取请求失败:', error);
+      return null;
     }
   }
 }

@@ -1,8 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface AppHeaderProps {
-  currentPage: 'chat' | 'demo' | 'editor';
-  onPageChange: (page: 'chat' | 'demo' | 'editor') => void;
+  currentPage: 'chat' | 'demo' | 'editor' | 'onestop';
   isOnline: boolean;
 }
 
@@ -10,13 +10,19 @@ interface AppHeaderProps {
  * 应用头部导航组件
  * 提供页面切换和状态显示功能
  */
-const AppHeader: React.FC<AppHeaderProps> = ({ currentPage, onPageChange, isOnline }) => {
+const AppHeader: React.FC<AppHeaderProps> = ({ currentPage, isOnline }) => {
+  const navigate = useNavigate();
   const getPageTitle = () => {
     switch (currentPage) {
       case 'editor':
         return { 
           title: '动态代码编辑器', 
           subtitle: '在线编辑TSX代码并实时预览效果（支持 TypeScript + Tailwind CSS）' 
+        };
+      case 'onestop':
+        return { 
+          title: '一站式体验', 
+          subtitle: '智能对话 + 代码生成 + 实时预览的完整开发体验' 
         };
       default:
         return { 
@@ -47,7 +53,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ currentPage, onPageChange, isOnli
           {/* 页面切换按钮 */}
           <div className="flex items-center space-x-2 bg-white/50 rounded-full p-1 backdrop-blur-sm">
             <button
-              onClick={() => onPageChange('chat')}
+              onClick={() => navigate('/chat')}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 currentPage === 'chat'
                   ? 'bg-blue-600 text-white shadow-lg'
@@ -57,7 +63,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ currentPage, onPageChange, isOnli
               智能对话
             </button>
             <button
-              onClick={() => onPageChange('editor')}
+              onClick={() => navigate('/editor')}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 currentPage === 'editor'
                   ? 'bg-green-600 text-white shadow-lg'
@@ -65,6 +71,16 @@ const AppHeader: React.FC<AppHeaderProps> = ({ currentPage, onPageChange, isOnli
               }`}
             >
               代码编辑器
+            </button>
+            <button
+              onClick={() => navigate('/onestop')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                currentPage === 'onestop'
+                  ? 'bg-purple-600 text-white shadow-lg'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
+              }`}
+            >
+              一站式体验
             </button>
           </div>
 

@@ -1,13 +1,9 @@
 import { useState, useCallback } from 'react';
 import type { Message } from '../types';
 
-type PageType = 'chat' | 'demo' | 'editor';
-
 interface UseAppStateReturn {
-  currentPage: PageType;
   messages: Message[];
   currentTsxCode: string;
-  setCurrentPage: (page: PageType) => void;
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   updateTsxCode: (code: string) => void;
   clearMessages: () => void;
@@ -15,10 +11,9 @@ interface UseAppStateReturn {
 
 /**
  * 应用状态管理Hook
- * 集中管理应用的核心状态
+ * 集中管理应用的核心状态（不包括页面状态，由路由管理）
  */
 export const useAppState = (): UseAppStateReturn => {
-  const [currentPage, setCurrentPage] = useState<PageType>('chat');
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentTsxCode, setCurrentTsxCode] = useState('');
 
@@ -34,10 +29,8 @@ export const useAppState = (): UseAppStateReturn => {
   }, []);
 
   return {
-    currentPage,
     messages,
     currentTsxCode,
-    setCurrentPage,
     setMessages,
     updateTsxCode,
     clearMessages

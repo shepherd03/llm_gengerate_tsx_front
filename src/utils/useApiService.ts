@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiService } from '../services/api';
-import type { Message } from '../types';
+import type { Message, BackendResponse, FetchDataResponse } from '../types';
 
 interface UseApiServiceReturn {
   isOnline: boolean;
   isLoading: boolean;
   sendMessage: (content: string, messages: Message[], setMessages: React.Dispatch<React.SetStateAction<Message[]>>) => Promise<void>;
+  fetchData: (userInput: string) => Promise<BackendResponse<FetchDataResponse> | null>;
 }
 
 /**
@@ -81,10 +82,16 @@ export const useApiService = (): UseApiServiceReturn => {
     }
   }, []);
 
+  // 获取数据处理函数
+  const fetchData = useCallback(async (userInput: string): Promise<BackendResponse<FetchDataResponse> | null> => {
+    return await apiService.fetchData(userInput);
+  }, []);
+
   return {
     isOnline,
     isLoading,
-    sendMessage
+    sendMessage,
+    fetchData
   };
 };
 

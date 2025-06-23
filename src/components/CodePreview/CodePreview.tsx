@@ -30,7 +30,7 @@ export const CodePreview: React.FC<CodePreviewProps> = ({
     try {
       let processedCode = code;
 
-      // 移除所有import语句（因为我们会通过scope提供依赖）
+      // 移除所有import语句
       processedCode = processedCode.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
 
       // 检查是否有export default语句
