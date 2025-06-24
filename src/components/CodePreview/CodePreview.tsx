@@ -7,6 +7,7 @@ import ReactECharts from 'echarts-for-react';
 interface CodePreviewProps {
   compiledCode: string;
   error?: string | null;
+  isCompiling?: boolean;
   className?: string;
 }
 
@@ -17,6 +18,7 @@ interface CodePreviewProps {
 export const CodePreview: React.FC<CodePreviewProps> = ({
   compiledCode,
   error,
+  isCompiling = false,
   className = ''
 }) => {
   const [processedCode, setProcessedCode] = useState<string>('');
@@ -99,6 +101,17 @@ export const CodePreview: React.FC<CodePreviewProps> = ({
       }
     };
   }, [compiledCode, processCode]);
+
+  // 如果正在编译，显示编译状态
+  if (isCompiling) {
+    return (
+      <div className={`flex flex-col items-center justify-center h-full text-center ${className}`}>
+        <div className="w-12 h-12 mx-auto mb-4 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
+        <p className="text-lg font-semibold mb-2 text-gray-700">编译中</p>
+        <p className="text-sm text-gray-600">正在处理您的代码...</p>
+      </div>
+    );
+  }
 
   // 如果有错误或没有编译代码，显示占位符
   if (error || renderError || !compiledCode || !processedCode) {

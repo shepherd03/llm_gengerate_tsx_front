@@ -1,13 +1,23 @@
 import React, { useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import type { MessageListProps } from '../types';
+import type { Message } from '../types';
 import { GlassCard } from './Common/GlassContainer';
+
+interface MessageContainerProps {
+  messages: Message[];
+  chatTip?: string;
+}
 
 /**
  * 消息列表组件
  * 用于展示对话历史和TSX代码
  */
-const MessageList: React.FC<MessageListProps> = ({ messages }) => {
+const MessageList: React.FC<MessageContainerProps> = (
+  {
+    messages,
+    chatTip = "输入您的需求，我将为您生成相应的TSX代码组件"
+  }
+) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // 自动滚动到最新消息
@@ -38,7 +48,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
           </div>
           <p className="text-xl font-semibold mb-3 bg-gradient-to-r from-gray-700 to-gray-600 bg-clip-text text-transparent">开始对话</p>
           <p className="text-sm text-center max-w-md text-gray-600 leading-relaxed">
-            输入您的需求，我将为您生成相应的TSX代码组件
+            {chatTip}
           </p>
         </div>
       ) : (
@@ -73,7 +83,6 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
                       <ReactMarkdown>{message.content}</ReactMarkdown>
                     </div>
 
-                    {/* 如果有TSX代码，显示提示 */}
                     {message.tsxCode && (
                       <GlassCard className="mt-4 p-3 border border-green-300/40">
                         <div className="flex items-center text-green-700 text-xs font-medium ">
@@ -82,7 +91,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                             </svg>
                           </div>
-                          TSX代码已生成，请在右侧预览
+                          对应展示已生成，请在右侧预览
                         </div>
                       </GlassCard>
                     )}

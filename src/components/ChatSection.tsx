@@ -1,5 +1,5 @@
 import React from 'react';
-import MessageList from './MessageList';
+import MessageList from './MessageContainer';
 import ChatInput from './ChatInput';
 import { GlassPanel } from './Common/GlassContainer';
 import type { Message } from '../types';

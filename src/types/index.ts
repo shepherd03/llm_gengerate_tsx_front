@@ -47,6 +47,20 @@ export interface FetchDataResponse {
   result: any; // 根据operation_type不同，数据格式不同
   type?: string; // 仅在visualization时存在
   source?: string; // 仅在statistical_analysis时存在
+  message?: string; // 子任务提示信息
+}
+
+// 多步任务响应数据结构
+export interface MultiStepResponse {
+  results: FetchDataResponse[];
+}
+
+// 完整的后端响应（支持单步和多步）
+export interface CompleteBackendResponse {
+  code: number;
+  message: string;
+  data: FetchDataResponse | MultiStepResponse;
+  timestamp?: string;
 }
 
 // 数据展示类型
@@ -70,11 +84,6 @@ export interface VisualizationResponse {
   title: string;
   result: Array<Record<string, any>>;
   type: string;
-}
-
-// 组件Props类型定义
-export interface MessageListProps {
-  messages: Message[];
 }
 
 export interface CodeDisplayProps {

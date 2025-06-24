@@ -9,6 +9,7 @@ interface CodePreviewPanelProps {
   isCompiling?: boolean;
   className?: string;
   title?: string;
+  showStatus?: boolean;
 }
 
 /**
@@ -20,7 +21,8 @@ export const CodePreviewPanel: React.FC<CodePreviewPanelProps> = ({
   error,
   isCompiling = false,
   className = '',
-  title = '实时预览'
+  title = '实时预览',
+  showStatus = false
 }) => {
   // 确定副标题
   const getSubtitle = () => {
@@ -43,7 +45,7 @@ export const CodePreviewPanel: React.FC<CodePreviewPanelProps> = ({
       {/* 标题栏 */}
       <WindowHeader
         title={title}
-        subtitle={getSubtitle()}
+        subtitle={showStatus ? getSubtitle() : ''}
         variant="gradient"
         showDots={false}
         status={getStatusVariant()}
@@ -52,19 +54,12 @@ export const CodePreviewPanel: React.FC<CodePreviewPanelProps> = ({
       {/* 预览容器 */}
       <div className="flex-1 overflow-hidden">
         <div className="h-full overflow-auto scrollbar-hide">
-          {isCompiling ? (
-            <div className="flex flex-col items-center justify-center h-full text-center">
-              <div className="w-12 h-12 mx-auto mb-4 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
-              <p className="text-lg font-semibold mb-2 text-gray-700">编译中</p>
-              <p className="text-sm text-gray-600">正在处理您的代码...</p>
-            </div>
-          ) : (
-            <CodePreview
-              compiledCode={compiledCode}
-              error={error}
-              className="h-full"
-            />
-          )}
+          <CodePreview
+            compiledCode={compiledCode}
+            error={error}
+            isCompiling={isCompiling}
+            className="h-full"
+          />
         </div>
       </div>
     </GlassPanel>

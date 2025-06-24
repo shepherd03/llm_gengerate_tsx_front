@@ -3,6 +3,7 @@ import AppLayout from '../components/AppLayout';
 import ChatPage from '../pages/ChatPage';
 import CodeEditorPreview from '../pages/CodeEditorPreview';
 import OneStopExperience from '../pages/OneStopExperience';
+import DataAnalysisPage from '../pages/DataAnalysisPage';
 
 /**
  * 应用路由配置
@@ -28,6 +29,10 @@ export const router = createBrowserRouter([
       {
         path: 'onestop',
         element: <OneStopExperience />
+      },
+      {
+        path: 'analysis',
+        element: <DataAnalysisPage />
       }
     ]
   }

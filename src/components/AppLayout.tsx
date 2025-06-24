@@ -15,7 +15,7 @@ interface AppLayoutProps {
 const AppLayout: React.FC<AppLayoutProps> = ({ className = '' }) => {
   const location = useLocation();
   const { isOnline } = useApiService();
-  
+
   // 根据当前路径确定页面类型
   const getCurrentPage = () => {
     if (location.pathname.includes('/editor')) {
@@ -23,6 +23,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ className = '' }) => {
     }
     if (location.pathname.includes('/onestop')) {
       return 'onestop';
+    }
+    if (location.pathname.includes('/analysis')) {
+      return 'analysis';
     }
     return 'chat';
   };

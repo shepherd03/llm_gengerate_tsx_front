@@ -28,7 +28,7 @@ const WindowHeader: React.FC<WindowHeaderProps> = ({
   subtitle,
   actions,
   variant = 'default',
-  showDots = true,
+  showDots = false,
   customDots,
   titleClassName = '',
   subtitleClassName = '',

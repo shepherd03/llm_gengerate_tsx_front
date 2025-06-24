@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface AppHeaderProps {
-  currentPage: 'chat' | 'demo' | 'editor' | 'onestop';
+  currentPage: 'chat' | 'demo' | 'editor' | 'onestop' | 'analysis';
   isOnline: boolean;
 }
 
@@ -15,19 +15,24 @@ const AppHeader: React.FC<AppHeaderProps> = ({ currentPage, isOnline }) => {
   const getPageTitle = () => {
     switch (currentPage) {
       case 'editor':
-        return { 
-          title: '动态代码编辑器', 
-          subtitle: '在线编辑TSX代码并实时预览效果（支持 TypeScript + Tailwind CSS）' 
+        return {
+          title: '动态代码编辑器',
+          subtitle: '在线编辑TSX代码并实时预览效果（支持 TypeScript + Tailwind CSS）'
         };
       case 'onestop':
-        return { 
-          title: '一站式体验', 
-          subtitle: '智能对话 + 代码生成 + 实时预览的完整开发体验' 
+        return {
+          title: '一站式体验',
+          subtitle: '智能对话 + 代码生成 + 实时预览的完整开发体验'
+        };
+      case 'analysis':
+        return {
+          title: '数据分析平台',
+          subtitle: '智能数据展示、统计分析和可视化，支持单步和多步任务'
         };
       default:
-        return { 
-          title: 'TSX 代码生成器', 
-          subtitle: '智能生成React TSX组件代码' 
+        return {
+          title: 'TSX 代码生成器',
+          subtitle: '智能生成React TSX组件代码'
         };
     }
   };
@@ -54,44 +59,48 @@ const AppHeader: React.FC<AppHeaderProps> = ({ currentPage, isOnline }) => {
           <div className="flex items-center space-x-2 bg-white/50 rounded-full p-1 backdrop-blur-sm">
             <button
               onClick={() => navigate('/chat')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                currentPage === 'chat'
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
-              }`}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${currentPage === 'chat'
+                ? 'bg-blue-600 text-white shadow-lg'
+                : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
+                }`}
             >
               智能对话
             </button>
             <button
               onClick={() => navigate('/editor')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                currentPage === 'editor'
-                  ? 'bg-green-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
-              }`}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${currentPage === 'editor'
+                ? 'bg-green-600 text-white shadow-lg'
+                : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
+                }`}
             >
               代码编辑器
             </button>
             <button
               onClick={() => navigate('/onestop')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                currentPage === 'onestop'
-                  ? 'bg-purple-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
-              }`}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${currentPage === 'onestop'
+                ? 'bg-purple-600 text-white shadow-lg'
+                : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
+                }`}
             >
               一站式体验
+            </button>
+            <button
+              onClick={() => navigate('/analysis')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${currentPage === 'analysis'
+                ? 'bg-orange-600 text-white shadow-lg'
+                : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
+                }`}
+            >
+              数据分析
             </button>
           </div>
 
           {/* 状态指示器 */}
           <div className="flex items-center space-x-3 bg-white/50 rounded-full px-4 py-2 backdrop-blur-sm">
-            <div className={`w-3 h-3 rounded-full animate-pulse ${
-              isOnline ? 'bg-emerald-400 shadow-emerald-400/50' : 'bg-red-400 shadow-red-400/50'
-            } shadow-lg`}></div>
-            <span className={`text-sm font-medium ${
-              isOnline ? 'text-emerald-700' : 'text-red-700'
-            }`}>
+            <div className={`w-3 h-3 rounded-full animate-pulse ${isOnline ? 'bg-emerald-400 shadow-emerald-400/50' : 'bg-red-400 shadow-red-400/50'
+              } shadow-lg`}></div>
+            <span className={`text-sm font-medium ${isOnline ? 'text-emerald-700' : 'text-red-700'
+              }`}>
               {isOnline ? '服务正常' : '服务离线'}
             </span>
           </div>
