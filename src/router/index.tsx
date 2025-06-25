@@ -2,7 +2,6 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import ChatPage from '../pages/ChatPage';
 import CodeEditorPreview from '../pages/CodeEditorPreview';
-import OneStopExperience from '../pages/OneStopExperience';
 import DataAnalysisPage from '../pages/DataAnalysisPage';
 
 /**
@@ -25,10 +24,6 @@ export const router = createBrowserRouter([
       {
         path: 'editor',
         element: <CodeEditorPreview />
-      },
-      {
-        path: 'onestop',
-        element: <OneStopExperience />
       },
       {
         path: 'analysis',

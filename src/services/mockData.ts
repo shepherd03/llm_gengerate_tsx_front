@@ -5,6 +5,7 @@
 
 import type { CompleteBackendResponse, FetchDataResponse, MultiStepResponse } from '../types';
 
+
 // 模拟数据展示响应
 const mockDataDisplayResponse: FetchDataResponse = {
   operation_type: 'data_display',

@@ -40,6 +40,22 @@ export default {
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
       },
+      plugins: [
+        function ({ addUtilities }) {
+          addUtilities({
+            '.no-scrollbar': {
+              /* Firefox */
+              'scrollbar-width': 'none',
+              /* IE/Edge */
+              '-ms-overflow-style': 'none',
+              /* Chrome/Safari */
+              '&::-webkit-scrollbar': {
+                display: 'none',
+              },
+            },
+          });
+        },
+      ],
     },
   },
   plugins: [],

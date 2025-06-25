@@ -76,15 +76,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({ currentPage, isOnline }) => {
               代码编辑器
             </button>
             <button
-              onClick={() => navigate('/onestop')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${currentPage === 'onestop'
-                ? 'bg-purple-600 text-white shadow-lg'
-                : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
-                }`}
-            >
-              一站式体验
-            </button>
-            <button
               onClick={() => navigate('/analysis')}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${currentPage === 'analysis'
                 ? 'bg-orange-600 text-white shadow-lg'

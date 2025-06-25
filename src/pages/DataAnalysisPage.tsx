@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { GlassPanel } from '../components/Common/GlassContainer';
 import WindowHeader from '../components/Common/WindowHeader';
 import ChatInput from '../components/ChatInput';
@@ -8,7 +8,7 @@ import StatisticalAnalysisComponent from '../components/StatisticalAnalysis/Stat
 import CodePreviewPanel from '../components/CodePreview/CodePreviewPanel';
 import { apiService } from '../services/api';
 import { MockDataService } from '../services/mockData';
-import type { Message, FetchDataResponse, MultiStepResponse, CompleteBackendResponse } from '../types';
+import type { Message, FetchDataResponse, MultiStepResponse } from '../types';
 
 interface RenderedComponent {
   id: string;
@@ -47,7 +47,7 @@ function DataAnalysisPage() {
     const aiMessage: Message = {
       id: (Date.now() + 1).toString(),
       type: 'assistant',
-      content: '正在请求...',
+      content: '正在分析意图',
       timestamp: Date.now()
     };
     setMessages(prev => [...prev, aiMessage]);
@@ -93,7 +93,7 @@ function DataAnalysisPage() {
         // 更新AI消息
         setMessages(prev => prev.map(msg =>
           msg.id === aiMessage.id
-            ? { ...msg, content: `检测到多步任务，共${multiStepResponse.results.length}个步骤，开始执行...` }
+            ? { ...msg, content: `检测到多步任务，共${multiStepResponse.results.length}个步骤，开始执行` }
             : msg
         ));
 
@@ -448,7 +448,11 @@ export default MyComponent;`;
         )}
 
         <div className="flex-1 overflow-hidden">
-          <MessageContainer messages={messages} chatTip="输入您的需求" />
+          <MessageContainer
+            messages={messages}
+            chatTip="输入您的需求"
+            isLoading={isLoading || isProcessingMultiStep}
+          />
         </div>
         <ChatInput
           onSendMessage={handleSendMessage}

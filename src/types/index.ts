@@ -4,7 +4,6 @@ export interface Message {
   type: 'user' | 'assistant';
   content: string;
   timestamp: number;
-  tsxCode?: string;
 }
 
 // API响应类型定义
@@ -20,23 +19,6 @@ export interface BackendResponse<T = any> {
   code: number;
   message: string;
   data?: T;
-  timestamp: string;
-}
-
-// TSX生成接口的数据结构
-export interface TsxGenerationData {
-  tsx_code: string;
-  input_data: any;
-  prompt_used: 'custom' | 'default';
-  data_type: string;
-}
-
-// 健康检查数据结构
-export interface HealthCheckData {
-  service: string;
-  version: string;
-  status: string;
-  environment: string;
   timestamp: string;
 }
 
@@ -63,35 +45,63 @@ export interface CompleteBackendResponse {
   timestamp?: string;
 }
 
-// 数据展示类型
-export interface DataDisplayResponse {
-  operation_type: 'data_display';
-  title: string;
-  result: Array<Record<string, any>>;
+
+
+// 流式响应消息基础类型
+export type StreamMessage =
+  | StreamInfoMessage
+  | StreamDataDisplayMessage
+  | StreamStatisticalAnalysisMessage
+  | StreamVisualizationMessage
+  | StreamErrorMessage
+  | StreamFinishMessage;
+
+// 流式响应 - 信息提示
+export interface StreamInfoMessage {
+  type: 'info';
+  message: string;
 }
 
-// 统计分析类型
-export interface StatisticalAnalysisResponse {
-  operation_type: 'statistical_analysis';
+// 流式响应 - 数据展示
+export interface StreamDataDisplayMessage {
+  type: 'data_display';
+  message: string;
+  data: {
+    operation_type: 'data_display';
+    title: string;
+    result: Array<Record<string, any>>;
+  };
+}
+
+// 流式响应 - 统计分析结果
+export interface StreamStatisticalAnalysisMessage {
+  type: 'statistical_analysis';
+  message: string;
   title: string;
-  result: Record<string, any>;
+  data: Array<Record<string, any>>;
   source: string;
 }
 
-// 可视化类型
-export interface VisualizationResponse {
-  operation_type: 'visualization';
+// 流式响应 - 可视化数据
+export interface StreamVisualizationMessage {
+  type: 'visualization';
+  message: string;
+  vis_type: 'bar' | 'line' | 'pie' | 'scatter' | 'histogram';
   title: string;
-  result: Array<Record<string, any>>;
-  type: string;
+  data: Array<Record<string, any>>;
 }
 
-export interface CodeDisplayProps {
-  code: string;
-  language?: string;
+// 流式响应 - 错误信息
+export interface StreamErrorMessage {
+  type: 'error';
+  error_type: 'fetch_data_error' | 'execution_error';
+  message: string;
+  data: Record<string, any>;
 }
 
-export interface ChatInputProps {
-  onSendMessage: (message: string) => void;
-  isLoading: boolean;
+// 流式响应 - 任务完成
+export interface StreamFinishMessage {
+  type: 'finish';
+  message: string;
+  step?: number;
 }

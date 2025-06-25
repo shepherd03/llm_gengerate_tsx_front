@@ -1,11 +1,37 @@
-import type { 
-  ApiResponse, 
-  BackendResponse, 
-  TsxGenerationData, 
-  HealthCheckData, 
-  FetchDataResponse 
+import {
+  httpClient,
+  type ApiResponse
+} from '../utils/http';
+import type {
+  BackendResponse,
+  FetchDataResponse,
+  StreamMessage
 } from '../types';
-import { httpClient } from '../utils/http';
+
+// TSX生成接口的数据结构
+interface TsxGenerationData {
+  tsx_code: string;
+  input_data: any;
+  prompt_used: 'custom' | 'default';
+  data_type: string;
+}
+
+// 健康检查数据结构
+interface HealthCheckData {
+  service: string;
+  version: string;
+  status: string;
+  environment: string;
+  timestamp: string;
+}
+
+// TSX生成响应接口
+interface TsxGenerationResponse {
+  success: boolean;
+  tsxCode: string;
+  message?: string;
+  error?: string;
+}
 
 /**
  * API服务类
@@ -15,9 +41,9 @@ class ApiService {
   /**
    * 发送消息到后端并获取TSX代码
    * @param message 用户输入的消息
-   * @returns Promise<ApiResponse>
+   * @returns Promise<TsxGenerationResponse>
    */
-  async generateTsxCode(message: string): Promise<ApiResponse> {
+  async generateTsxCode(message: string): Promise<TsxGenerationResponse> {
     try {
       const response = await httpClient.post<BackendResponse<TsxGenerationData>>('/generate_tsx', {
         data: message.trim(),
@@ -95,9 +121,9 @@ class ApiService {
    * 生成TSX代码（支持自定义提示词）
    * @param data 要渲染的数据
    * @param customPrompt 可选的自定义提示词
-   * @returns Promise<ApiResponse>
+   * @returns Promise<TsxGenerationResponse>
    */
-  async generateTsxWithData(data: any, customPrompt?: string): Promise<ApiResponse> {
+  async generateTsxWithData(data: any, customPrompt?: string): Promise<TsxGenerationResponse> {
     try {
       const response = await httpClient.post<BackendResponse<TsxGenerationData>>('/generate_tsx', {
         data: data,
@@ -181,11 +207,58 @@ class ApiService {
         console.error('响应数据格式错误: 缺少operation_type字段');
         return null;
       }
-      
+
       return backendData;
     } catch (error) {
       console.error('数据获取请求失败:', error);
       return null;
+    }
+  }
+
+  /**
+   * 流式数据分析接口
+   * @param userInput 用户输入的分析需求
+   * @param conversationId 会话ID，默认为"global"
+   * @param onMessage 消息回调函数
+   */
+  async streamDataAnalysis(
+    userInput: string,
+    onMessage: (message: StreamMessage) => void,
+    conversationId: string = 'global'
+  ): Promise<void> {
+    try {
+      await httpClient.streamPost(
+        '/micro_output_stream',
+        {
+          user_input: userInput,
+          conversation_id: conversationId
+        },
+        onMessage
+      );
+    } catch (error) {
+      console.error('流式数据分析请求失败:', error);
+      // 向回调函数发送错误消息
+      onMessage({
+        type: 'error',
+        error_type: 'execution_error',
+        message: error instanceof Error ? error.message : '未知错误',
+        data: {}
+      });
+    }
+  }
+
+  /**
+   * 重置代理状态
+   * @param conversationId 会话ID，默认为"global"
+   * @returns Promise<boolean>
+   */
+  async resetAgent(conversationId: string = 'global'): Promise<boolean> {
+    try {
+      const response = await httpClient.post('/reset', { conversation_id: conversationId });
+      return response.success;
+    } catch (error) {
+      console.error('重置代理状态失败:', error);
+      return false;
     }
   }
 }

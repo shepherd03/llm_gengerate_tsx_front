@@ -2,10 +2,12 @@ import React, { useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import type { Message } from '../types';
 import { GlassCard } from './Common/GlassContainer';
+import TypingIndicator from './Common/TypingIndicator';
 
 interface MessageContainerProps {
   messages: Message[];
   chatTip?: string;
+  isLoading?: boolean;
 }
 
 /**
@@ -15,7 +17,8 @@ interface MessageContainerProps {
 const MessageList: React.FC<MessageContainerProps> = (
   {
     messages,
-    chatTip = "输入您的需求，我将为您生成相应的TSX代码组件"
+    chatTip = "输入您的需求，我将为您生成相应的TSX代码组件",
+    isLoading = false,
   }
 ) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -52,12 +55,12 @@ const MessageList: React.FC<MessageContainerProps> = (
           </p>
         </div>
       ) : (
-        messages.map((message) => (
-          <div key={message.id} className="message-enter">
-            {message.type === 'user' ? (
-              // 用户消息
-              <div className="flex justify-end">
-                <div className="flex items-start space-x-4 max-w-3xl">
+        messages.map((message, index) => (
+          <div key={message.id} className={`message-enter flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className="flex items-start space-x-4 max-w-3xl">
+              {message.type === 'user' ? (
+                // 用户消息
+                <>
                   <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl px-5 py-4 max-w-lg shadow-lg transform hover:scale-[1.02] transition-all duration-200">
                     <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
                     <p className="text-xs text-blue-100 mt-3 opacity-80">{formatTime(message.timestamp)}</p>
@@ -67,40 +70,21 @@ const MessageList: React.FC<MessageContainerProps> = (
                       <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                     </svg>
                   </div>
-                </div>
-              </div>
-            ) : (
-              // AI助手消息
-              <div className="flex justify-start">
-                <div className="flex items-start space-x-4 max-w-3xl">
+                </>
+              ) : (
+                // AI助手消息
+                <>
                   <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 flex items-center justify-center flex-shrink-0 shadow-lg">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                   </div>
                   <GlassCard className="flex-1 bg-white/80 p-4">
-                    <div className="prose prose-sm max-w-none">
-                      <ReactMarkdown>{message.content}</ReactMarkdown>
-                    </div>
-
-                    {message.tsxCode && (
-                      <GlassCard className="mt-4 p-3 border border-green-300/40">
-                        <div className="flex items-center text-green-700 text-xs font-medium ">
-                          <div className="w-4 h-4 mr-2 rounded-full bg-green-500 flex items-center justify-center shadow-sm">
-                            <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          对应展示已生成，请在右侧预览
-                        </div>
-                      </GlassCard>
-                    )}
-
-                    <p className="text-xs text-gray-500 mt-3 opacity-70">{formatTime(message.timestamp)}</p>
+                    <TypingIndicator text={message.content} showAnimation={isLoading && index === messages.length - 1} />
                   </GlassCard>
-                </div>
-              </div>
-            )}
+                </>
+              )}
+            </div>
           </div>
         ))
       )}
