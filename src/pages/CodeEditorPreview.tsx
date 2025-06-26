@@ -21,7 +21,6 @@ const CodeEditorPreview: React.FC = () => {
     error,
     isCompiling,
     compile,
-    clearError
   } = useCodeCompiler({
     debounceMs: 100,
     autoCompile: true

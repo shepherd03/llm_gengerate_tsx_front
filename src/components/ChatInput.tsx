@@ -3,13 +3,14 @@ import React, { useRef, useState, type KeyboardEvent } from 'react';
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   isLoading: boolean;
+  placeholder?: string;
 }
 
 /**
  * 聊天输入组件
  * 用于用户输入消息和发送请求
  */
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, placeholder = '输入您的需求，我将为您生成TSX代码...' }) => {
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -55,7 +56,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
           value={message}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder="输入您的需求，我将为您生成TSX代码..."
+          placeholder={placeholder}
           className="overflow-hidden w-full resize-none rounded-2xl border border-white/40 glass-strong px-5 py-4 pr-14 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/40 focus:glass-strong transition-all duration-300 text-sm leading-relaxed shadow-glass placeholder:text-gray-500"
           style={{ minHeight: '52px', maxHeight: '120px' }}
           disabled={isLoading}

@@ -10,6 +10,8 @@ interface CodePreviewPanelProps {
   className?: string;
   title?: string;
   showStatus?: boolean;
+  /** 预览容器高度，可以是像素值(如 400)或CSS值(如 '50vh', '100%') */
+  height?: number | string;
 }
 
 /**
@@ -22,7 +24,8 @@ export const CodePreviewPanel: React.FC<CodePreviewPanelProps> = ({
   isCompiling = false,
   className = '',
   title = '实时预览',
-  showStatus = false
+  showStatus = false,
+  height = "500px"
 }) => {
   // 确定副标题
   const getSubtitle = () => {
@@ -40,8 +43,16 @@ export const CodePreviewPanel: React.FC<CodePreviewPanelProps> = ({
     return 'default';
   };
 
+  // 处理高度样式
+  const containerStyle = height ? {
+    height: typeof height === 'number' ? `${height}px` : height
+  } : {};
+
   return (
-    <GlassPanel className={`flex flex-col ${className}`}>
+    <GlassPanel
+      className={`flex flex-col ${className}`}
+      style={containerStyle}
+    >
       {/* 标题栏 */}
       <WindowHeader
         title={title}
@@ -64,6 +75,7 @@ export const CodePreviewPanel: React.FC<CodePreviewPanelProps> = ({
       </div>
     </GlassPanel>
   );
+
 };
 
 export default CodePreviewPanel;

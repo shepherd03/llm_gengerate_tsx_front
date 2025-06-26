@@ -1,5 +1,9 @@
 import React from 'react';
-import Editor from '@monaco-editor/react';
+import { Editor, loader } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
+
+// 配置Monaco Editor加载器
+loader.config({ monaco });
 
 interface CodeEditorProps {
   value: string;

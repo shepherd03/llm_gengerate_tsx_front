@@ -6,20 +6,10 @@ export interface Message {
   timestamp: number;
 }
 
-// API响应类型定义
-export interface ApiResponse {
-  success: boolean;
-  tsxCode: string;
-  message: string;
-  error?: string;
-}
-
-// 后端统一响应格式
-export interface BackendResponse<T = any> {
+export interface ResponseData<T> {
   code: number;
   message: string;
-  data?: T;
-  timestamp: string;
+  data: T;
 }
 
 // 数据获取接口的响应数据结构
@@ -32,21 +22,6 @@ export interface FetchDataResponse {
   message?: string; // 子任务提示信息
 }
 
-// 多步任务响应数据结构
-export interface MultiStepResponse {
-  results: FetchDataResponse[];
-}
-
-// 完整的后端响应（支持单步和多步）
-export interface CompleteBackendResponse {
-  code: number;
-  message: string;
-  data: FetchDataResponse | MultiStepResponse;
-  timestamp?: string;
-}
-
-
-
 // 流式响应消息基础类型
 export type StreamMessage =
   | StreamInfoMessage
@@ -55,6 +30,12 @@ export type StreamMessage =
   | StreamVisualizationMessage
   | StreamErrorMessage
   | StreamFinishMessage;
+
+export interface StreamTsxGenerationMessage {
+  type: 'tsx_generation';
+  message: string;
+  tsx_code: string,
+}
 
 // 流式响应 - 信息提示
 export interface StreamInfoMessage {
@@ -94,7 +75,7 @@ export interface StreamVisualizationMessage {
 // 流式响应 - 错误信息
 export interface StreamErrorMessage {
   type: 'error';
-  error_type: 'fetch_data_error' | 'execution_error';
+  error_type: 'common' | 'fetch_data_error' | 'execution_error' | 'request_error' | 'generation_error';
   message: string;
   data: Record<string, any>;
 }

@@ -1,19 +1,22 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse, AxiosError } from 'axios';
+import type { ResponseData } from '../types';
 
 // 服务端点配置
-enum ServiceEndpoint {
-  DATA_AGENT = 'DATA_AGENT',
-  TSX_GENERATOR = 'TSX_GENERATOR'
-}
+const ServiceEndpoint = {
+  DATA_AGENT: 'DATA_AGENT',
+  TSX_GENERATOR: 'TSX_GENERATOR'
+} as const;
+
+type ServiceEndpointType = typeof ServiceEndpoint[keyof typeof ServiceEndpoint];
 
 // 服务端点URL映射
-const SERVICE_URLS: Record<ServiceEndpoint, string> = {
-  [ServiceEndpoint.DATA_AGENT]: 'http://localhost:5000',
-  [ServiceEndpoint.TSX_GENERATOR]: 'http://localhost:5001'
+const SERVICE_URLS: Record<ServiceEndpointType, string> = {
+  [ServiceEndpoint.DATA_AGENT]: 'http://localhost:5001',
+  [ServiceEndpoint.TSX_GENERATOR]: 'http://localhost:5000'
 };
 
 // 默认服务端点
-const DEFAULT_SERVICE = ServiceEndpoint.DATA_AGENT;
+const DEFAULT_SERVICE = ServiceEndpoint.TSX_GENERATOR;
 
 /**
  * HTTP请求配置接口
@@ -24,23 +27,13 @@ interface HttpConfig extends AxiosRequestConfig {
 }
 
 /**
- * 统一响应格式
- */
-interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
-}
-
-/**
  * HTTP请求封装类
  */
 class HttpClient {
-  private instances: Map<ServiceEndpoint, AxiosInstance> = new Map();
-  private defaultService: ServiceEndpoint;
+  private instances: Map<ServiceEndpointType, AxiosInstance> = new Map();
+  private defaultService: ServiceEndpointType;
 
-  constructor(defaultService: ServiceEndpoint = DEFAULT_SERVICE) {
+  constructor(defaultService: ServiceEndpointType = DEFAULT_SERVICE) {
     this.defaultService = defaultService;
 
     // 初始化所有服务端点的axios实例
@@ -54,24 +47,24 @@ class HttpClient {
     Object.entries(SERVICE_URLS).forEach(([service, baseURL]) => {
       const instance = axios.create({
         baseURL,
-        timeout: 60000, // 默认60秒超时
+        timeout: 120000, // 默认120秒超时
         headers: {
           'Content-Type': 'application/json',
         },
       });
 
       // 为每个实例设置拦截器
-      this.setupRequestInterceptor(instance, service as ServiceEndpoint);
-      this.setupResponseInterceptor(instance, service as ServiceEndpoint);
+      this.setupRequestInterceptor(instance, service as ServiceEndpointType);
+      this.setupResponseInterceptor(instance, service as ServiceEndpointType);
 
-      this.instances.set(service as ServiceEndpoint, instance);
+      this.instances.set(service as ServiceEndpointType, instance);
     });
   }
 
   /**
    * 获取指定服务的axios实例
    */
-  private getInstance(service?: ServiceEndpoint): AxiosInstance {
+  private getInstance(service?: ServiceEndpointType): AxiosInstance {
     const targetService = service || this.defaultService;
     const instance = this.instances.get(targetService);
 
@@ -85,7 +78,7 @@ class HttpClient {
   /**
    * 设置请求拦截器
    */
-  private setupRequestInterceptor(instance: AxiosInstance, service: ServiceEndpoint): void {
+  private setupRequestInterceptor(instance: AxiosInstance, service: ServiceEndpointType): void {
     instance.interceptors.request.use(
       (config) => {
         // 在请求发送前做一些处理
@@ -109,7 +102,7 @@ class HttpClient {
   /**
    * 设置响应拦截器
    */
-  private setupResponseInterceptor(instance: AxiosInstance, service: ServiceEndpoint): void {
+  private setupResponseInterceptor(instance: AxiosInstance, service: ServiceEndpointType): void {
     instance.interceptors.response.use(
       (response: AxiosResponse) => {
         console.log(`[${service}] ${response.status} ${response.config.url}`);
@@ -164,107 +157,78 @@ class HttpClient {
   /**
    * 设置默认服务端点
    */
-  setDefaultService(service: ServiceEndpoint): void {
+  setDefaultService(service: ServiceEndpointType): void {
     this.defaultService = service;
   }
 
   /**
    * 获取当前默认服务端点
    */
-  getDefaultService(): ServiceEndpoint {
+  getDefaultService(): ServiceEndpointType {
     return this.defaultService;
   }
 
   /**
    * 获取所有可用的服务端点
    */
-  getAvailableServices(): ServiceEndpoint[] {
+  getAvailableServices(): ServiceEndpointType[] {
     return Object.values(ServiceEndpoint);
   }
 
   /**
    * GET请求
    */
-  async get<T = any>(url: string, config?: HttpConfig & { service?: ServiceEndpoint }): Promise<ApiResponse<T>> {
+  async get<T = any>(url: string, config?: HttpConfig & { service?: ServiceEndpointType }): Promise<ResponseData<T>> {
     try {
       const { service, ...axiosConfig } = config || {};
       const instance = this.getInstance(service);
       const response = await instance.get(url, axiosConfig);
-      return this.formatResponse(response);
+      return response.data;
     } catch (error) {
-      return this.formatErrorResponse(error);
+      throw error;
     }
   }
 
   /**
    * POST请求
    */
-  async post<T = any>(url: string, data?: any, config?: HttpConfig & { service?: ServiceEndpoint }): Promise<ApiResponse<T>> {
+  async post<T = any>(url: string, data?: any, config?: HttpConfig & { service?: ServiceEndpointType }): Promise<ResponseData<T>> {
     try {
       const { service, ...axiosConfig } = config || {};
       const instance = this.getInstance(service);
       const response = await instance.post(url, data, axiosConfig);
-      return this.formatResponse(response);
+      return response.data;
     } catch (error) {
-      return this.formatErrorResponse(error);
+      throw error;
     }
   }
 
   /**
    * PUT请求
    */
-  async put<T = any>(url: string, data?: any, config?: HttpConfig & { service?: ServiceEndpoint }): Promise<ApiResponse<T>> {
+  async put<T = any>(url: string, data?: any, config?: HttpConfig & { service?: ServiceEndpointType }): Promise<ResponseData<T>> {
     try {
       const { service, ...axiosConfig } = config || {};
       const instance = this.getInstance(service);
       const response = await instance.put(url, data, axiosConfig);
-      return this.formatResponse(response);
+      return response.data;
     } catch (error) {
-      return this.formatErrorResponse(error);
+      throw error;
     }
   }
 
   /**
    * DELETE请求
    */
-  async delete<T = any>(url: string, config?: HttpConfig & { service?: ServiceEndpoint }): Promise<ApiResponse<T>> {
+  async delete<T = any>(url: string, config?: HttpConfig & { service?: ServiceEndpointType }): Promise<ResponseData<T>> {
     try {
       const { service, ...axiosConfig } = config || {};
       const instance = this.getInstance(service);
       const response = await instance.delete(url, axiosConfig);
-      return this.formatResponse(response);
+      return response.data;
     } catch (error) {
-      return this.formatErrorResponse(error);
+      throw error;
     }
-  }
-
-  /**
-   * 格式化成功响应
-   */
-  private formatResponse<T>(response: AxiosResponse): ApiResponse<T> {
-    const { data } = response;
-
-    // 如果后端返回的数据已经是标准格式
-    if (data && typeof data === 'object' && 'success' in data) {
-      return data;
-    }
-
-    // 否则包装成标准格式
-    return {
-      success: true,
-      data: data,
-      message: 'success'
-    };
-  }
-
-  /**
-   * 格式化错误响应
-   */
-  private formatErrorResponse(error: any): ApiResponse {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : '请求失败，请检查网络连接'
-    };
   }
 
   /**
@@ -278,14 +242,15 @@ class HttpClient {
     url: string,
     data: any,
     onMessage: (message: any) => void,
-    config?: HttpConfig & { service?: ServiceEndpoint }
+    config?: HttpConfig & { service?: ServiceEndpointType }
   ): Promise<void> {
     try {
       const { service, ...restConfig } = config || {};
       const targetService = service || this.defaultService;
       const baseURL = SERVICE_URLS[targetService];
+      const fullUrl = `${baseURL}${url}`;
 
-      const response = await fetch(`${baseURL}${url}`, {
+      const response = await fetch(fullUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -348,7 +313,7 @@ class HttpClient {
   /**
    * 获取axios实例（用于特殊需求）
    */
-  getAxiosInstance(service?: ServiceEndpoint): AxiosInstance {
+  getAxiosInstance(service?: ServiceEndpointType): AxiosInstance {
     return this.getInstance(service);
   }
 }
@@ -385,5 +350,5 @@ export const tsxGeneratorClient = {
 
 // 导出类型和实例
 export { ServiceEndpoint };
-export type { HttpConfig, ApiResponse };
+export type { HttpConfig, ServiceEndpointType };
 export default httpClient;

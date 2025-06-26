@@ -38,10 +38,10 @@ const StatisticalAnalysisComponent: React.FC<StatisticalAnalysisProps> = ({
 
       return {
         column,
-        sum,
+        sum: sum.toFixed(2),
         avg: avg.toFixed(2),
-        max,
-        min,
+        max: max.toFixed(2),
+        min: min.toFixed(2),
         count: values.length
       };
     });
@@ -97,7 +97,7 @@ const StatisticalAnalysisComponent: React.FC<StatisticalAnalysisProps> = ({
               <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
                 {Object.values(item).map((value, valueIndex) => (
                   <td key={valueIndex} className="py-2 px-3 text-gray-800">
-                    {typeof value === 'number' ? value.toLocaleString() : String(value)}
+                    {typeof value === 'number' ? Number(value).toFixed(2) : String(value)}
                   </td>
                 ))}
               </tr>

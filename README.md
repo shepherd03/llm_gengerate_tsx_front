@@ -28,6 +28,10 @@
 - ✅ `DataDisplayComponent` - 显示数据详情，支持分页显示前10条
 - ✅ `StatisticalAnalysisComponent` - 统计分析展示，包含数值统计摘要
 - ✅ `VisualizationComponent` - 图表生成，支持柱状图、折线图、饼图
+- ✅ `CodePreviewPanel` - 代码预览面板，支持高度配置
+  - 支持像素值高度设置 (如: `height={400}`)
+  - 支持CSS值高度设置 (如: `height="50vh"`, `height="100%"`)
+  - 提供完整的使用示例 (`CodePreviewPanel.example.tsx`)
 
 ### 系统集成 ✅
 - ✅ 路由系统更新 (`src/router/index.tsx`)
@@ -36,14 +40,7 @@
 - ✅ 类型定义扩展 (`src/types/index.ts`)
 - ✅ CSS动画效果添加 (`src/index.css`)
 
-### 模拟数据系统 ✅
-- ✅ 创建了完整的模拟数据服务 (`src/services/mockData.ts`)
-- ✅ 支持所有API文档中定义的响应格式
-- ✅ 智能识别用户输入，返回对应类型的模拟数据
-- ✅ 自动故障转移：API连接失败时自动切换到模拟数据
-- ✅ 模式切换功能：用户可手动切换实时/模拟数据模式
-- ✅ 示例提示词：提供快速测试的示例输入
-- ✅ 模拟网络延迟：提供真实的用户体验
+
 
 ## 技术栈
 - React 18
@@ -51,21 +48,44 @@
 - Vite
 - Tailwind CSS
 
+## 组件使用指南
+
+### CodePreviewPanel 高度配置
+
+`CodePreviewPanel` 组件现在支持通过 `height` 参数配置预览容器的高度：
+
+```typescript
+// 固定像素高度
+<CodePreviewPanel height={400} />
+
+// 视口高度百分比
+<CodePreviewPanel height="50vh" />
+
+// 相对父容器高度
+<CodePreviewPanel height="100%" />
+
+// 默认高度（不设置height参数，使用flex-1）
+<CodePreviewPanel />
+```
+
+#### 参数说明
+- `height?: number | string` - 预览容器高度
+  - `number` 类型：像素值，如 `400` 表示 400px
+  - `string` 类型：CSS值，如 `"50vh"`, `"100%"`, `"300px"` 等
+  - 不设置：使用默认的 flex-1 布局
+
+#### 使用场景
+- **固定高度**：适用于需要统一高度的预览区域
+- **视口高度**：适用于响应式设计，根据屏幕大小调整
+- **相对高度**：适用于嵌套在特定容器中的场景
+- **默认高度**：适用于弹性布局，自动填充可用空间
+
 ## API接口
 - `/fetch_data` - 数据获取接口
 - `/generate_tsx` - TSX代码生成
 - `/health_check` - 健康检查
 
-### 模拟数据功能
 
-当后端服务不可用时，系统会自动切换到模拟数据模式，支持：
-
-- **数据展示** - 河北省各地市停电计划数据
-- **统计分析** - 按地市合并的统计数据
-- **可视化** - 柱状图数据格式
-- **多步任务** - 统计分析 + 可视化组合
-
-用户可以通过界面上的模式切换按钮手动选择使用实时数据或模拟数据。
 
 ## 组件结构
 ```

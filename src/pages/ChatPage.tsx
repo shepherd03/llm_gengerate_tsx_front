@@ -1,17 +1,18 @@
-import { useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import ChatSection from '../components/ChatSection';
 import { CodePreviewPanel } from '../components/CodePreview/CodePreviewPanel';
-import { useAppState } from '../utils/useAppState';
 import { useApiService } from '../utils/useApiService';
 import { useCodeCompiler } from '../utils/useCodeCompiler';
+import type { Message } from '../types';
 
 function ChatPage() {
-  const {
-    messages,
-    currentTsxCode,
-    setMessages,
-    updateTsxCode
-  } = useAppState();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [currentTsxCode, setCurrentTsxCode] = useState('');
+
+  // 更新TSX代码
+  const updateTsxCode = useCallback((code: string) => {
+    setCurrentTsxCode(code);
+  }, []);
 
   const { isLoading, sendMessage } = useApiService();
   const { compiledCode, error: compileError, isCompiling, compile } = useCodeCompiler();

@@ -13,7 +13,7 @@ interface TypingIndicatorProps {
 /**
  * 打字指示器组件 - 显示AI正在生成回复的状态
  */
-const TypingIndicator: React.FC<TypingIndicatorProps> = ({ 
+const TypingIndicator: React.FC<TypingIndicatorProps> = ({
   text = '正在思考中',
   showAnimation = true,
   className = ''
